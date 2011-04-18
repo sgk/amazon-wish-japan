@@ -1,0 +1,17 @@
+application: amazon-wish-japan
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /update_wishid_list
+  script: cgi.py
+  login: admin
+- url: /update_wish_pages
+  script: cgi.py
+  login: admin
+- url: /
+  script: cgi.py
+
+builtins:
+- datastore_admin: on

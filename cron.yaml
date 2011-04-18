@@ -1,0 +1,7 @@
+cron:
+- description: update the list of wishlist pages
+  url: /update_wishid_list
+  schedule: every 10 minutes
+- description: update from the wishlist page contents
+  url: /update_wish_pages
+  schedule: every 3 minutes
