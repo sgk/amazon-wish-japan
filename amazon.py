@@ -1,3 +1,4 @@
+#!/usr/bin/python
 #vim:fileencoding=utf-8
 
 import urllib2
@@ -51,12 +52,12 @@ def get_wish_list(id):
   m = RE_OWNER.search(text)
   owner = decode_entity(m.group(1))
 
-  m = RE_ALL_ITEMS_COUNT.search(text)
-  all_items = int(m.group(1)) if m else 0
-  m = RE_WISH_ITEMS_COUNT.search(text)
-  wish_items = int(m.group(1)) if m else 0
-  got_items = all_items - wish_items
+  #m = RE_ALL_ITEMS_COUNT.search(text)
+  #all_items = int(m.group(1)) if m else 0
+  #m = RE_WISH_ITEMS_COUNT.search(text)
+  #wish_items = int(m.group(1)) if m else 0
 
+  wish_pieces = got_pieces = 0
   wish_amount = got_amount = 0
   # XXX 複数ページの処理が必要。
   for m in RE_ITEM.finditer(text):
@@ -64,21 +65,26 @@ def get_wish_list(id):
     price = int(mm.group(1)) if mm else 0
     all_ = int(m.group(2))
     got = int(m.group(3))
-    priority = m.group(4)
+    #priority = m.group(4)
     if all_ > got:
+      wish_pieces += all_ - got
       wish_amount += (all_ - got) * price
+    got_pieces += got
     got_amount += got * price
 
-  return owner, wish_items, got_items, wish_amount, got_amount
+  return owner, wish_pieces, got_pieces, wish_amount, got_amount
 
 def wish_list_page_from_id(id):
   return WISH_LIST_PAGE % id
 
-def main():
-  for id in get_wishid_list():
-    owner, wi, gi, wa, ga = get_wish_list(id)
+def main(ids):
+  if not ids:
+    ids = get_wishid_list()
+  for id in ids:
+    owner, wp, gp, wa, ga = get_wish_list(id)
     print owner.encode('utf-8')
-    print wi, gi, wa, ga
+    print wp, gp, wa, ga
 
 if __name__ == '__main__':
-  main()
+  import sys
+  main(sys.argv[1:])

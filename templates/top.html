@@ -2,6 +2,14 @@
   <head>
     <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
     <title>被災地ほしい物リスト一覧</title>
+    <style type="text/css">
+      .piecesCol {
+	text-align: right;
+      }
+      .amountCol {
+	text-align: right;
+      }
+    </style>
   </head>
   <body>
     <h1>被災地ほしい物リスト一覧</h1>
@@ -20,24 +28,31 @@
       <b>このページは、何らの権限も確実性も持ちません。必ず、リンク先の「ほしい物リスト」のページをご覧になり、送り先の場所、必要としている商品などの内容を確認してください。</b>
       悪意の第三者が被災地を騙る可能性もゼロではなく、そういった「ほしい物リスト」がここに混入する可能性もあります。
     </p>
+    <p>
+      ちょっと数字がおかしい場合がありますが、修正中です。
+    </p>
 
     <table border="1">
       <tr>
 	<th>ほしい物リストのオーナー</th>
-	<th>支援が必要</th>
-	<th>支援済み</th>
+	<th colspan="2">支援が必要</th>
+	<th colspan="2">支援済み</th>
       </tr>
       {% for page in pages %}
 	<tr>
 	  <td>
 	    <a href="http://www.amazon.co.jp/registry/wishlist/{{ page.key().name() }}">{{ page.owner_name }}</a>
 	  </td>
-	  <td>
-	    {{ page.wish_items|default(0, true) }}点
+	  <td class="piecesCol">
+	    {{ page.wish_items|default(0, true) }}個
+	  </td>
+	  <td class="amountCol">
 	    {{ page.wish_amount|default(0, true) }}円
 	  </td>
-	  <td>
-	    {{ page.got_items|default(0, true) }}点
+	  <td class="piecesCol">
+	    {{ page.got_items|default(0, true) }}個
+	  </td>
+	  <td class="amountCol">
 	    {{ page.got_amount|default(0, true) }}円
 	  </td>
 	</tr>
@@ -49,6 +64,7 @@
       <li>wish listページが取得できなかったときは削除する。</li>
       <li>一覧表に無かったときは削除する。</li>
       <li>wish listページが複数ページだった時の処理。</li>
+      <li>数値を3桁ずつに区切る。</li>
     </ul>
     <hr/>
     更新日：2011-4-18<br/>

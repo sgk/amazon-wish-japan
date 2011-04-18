@@ -58,7 +58,7 @@ def update_wish_pages():
   ids = WishId.all().filter('page_updated <', older_than).order('page_updated')
   for id in ids:
     try:
-      owner, wi, gi, wa, ga = amazon.get_wish_list(id.key().name())
+      owner, wp, gp, wa, ga = amazon.get_wish_list(id.key().name())
     except:
       # XXX 削除する。
       continue
@@ -66,8 +66,8 @@ def update_wish_pages():
       key_name=id.key().name(),
       wishid=id,
       owner_name=owner,
-      wish_items=wi,
-      got_items=gi,
+      wish_items=wp,
+      got_items=gp,
       wish_amount=wa,
       got_amount=ga,
     ).put()
