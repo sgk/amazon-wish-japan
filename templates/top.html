@@ -53,10 +53,18 @@
 	  <td>
 	    <a href="http://www.amazon.co.jp/registry/wishlist/{{ page.key().name() }}">{{ page.owner_name }}</a>
 	  </td>
-	  <td class="piecesCol">{{ page.wish_items|default(0, true) }}個</td>
-	  <td class="amountCol">{{ page.wish_amount|default(0, true) }}円</td>
-	  <td class="piecesCol">{{ page.got_items|default(0, true) }}個</td>
-	  <td class="amountCol">{{ page.got_amount|default(0, true) }}円</td>
+	  <td class="piecesCol">
+	    {{ page.wish_items|default(0, true)|comma }}個
+	  </td>
+	  <td class="amountCol">
+	    {{ page.wish_amount|default(0, true)|comma }}円
+	  </td>
+	  <td class="piecesCol">
+	    {{ page.got_items|default(0, true)|comma }}個
+	  </td>
+	  <td class="amountCol">
+	    {{ page.got_amount|default(0, true)|comma }}円
+	  </td>
 	</tr>
       {% endfor %}
     </table>

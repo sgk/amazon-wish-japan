@@ -1,17 +1,15 @@
 #vim:fileencoding=utf-8
 
-from flask import (
-  Flask, render_template,
-)
+from flask import Flask, render_template
 app = Flask(__name__)
 app.debug = True
+from jinja2 import environment
 
 from google.appengine.api import memcache
 from google.appengine.ext import db
 
 import datetime
 import time
-import logging
 import amazon
 
 CRAWL_INTERVAL = 5 * 60
@@ -79,3 +77,11 @@ def update_wish_pages():
 def top():
   pages = WishPage.all().order('-wish_amount')
   return render_template('top.html', pages=pages)
+
+@app.template_filter('comma')
+def comma_filter(value):
+  r = ''
+  while value >= 1000:
+    value, tail = divmod(value, 1000)
+    r = ',%03d%s' % (tail, r)
+  return '%d%s' % (value, r)
