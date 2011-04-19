@@ -9,6 +9,9 @@
       .amountCol {
 	text-align: right;
       }
+      .minutesAgo {
+	text-align: right;
+      }
       .important {
 	font-weight: bold;
 	color: red;
@@ -47,6 +50,7 @@
 	<th>支援先</th>
 	<th colspan="2">支援が必要</th>
 	<th colspan="2">支援済み</th>
+	<th>情報取得</th>
       </tr>
       {% for page in pages %}
 	<tr>
@@ -54,30 +58,38 @@
 	    <a href="http://www.amazon.co.jp/registry/wishlist/{{ page.key().name() }}">{{ page.owner_name }}</a>
 	  </td>
 	  <td class="piecesCol">
-	    {{ page.wish_items|default(0, true)|comma }}個
+	    {{ page.wish_pieces|default(0, true)|comma }}個
 	  </td>
 	  <td class="amountCol">
 	    {{ page.wish_amount|default(0, true)|comma }}円
 	  </td>
 	  <td class="piecesCol">
-	    {{ page.got_items|default(0, true)|comma }}個
+	    {{ page.got_pieces|default(0, true)|comma }}個
 	  </td>
 	  <td class="amountCol">
 	    {{ page.got_amount|default(0, true)|comma }}円
 	  </td>
+	  <td class="minutesAgo">
+	    {{ page.updated|minutes_ago }}分前
+	  </td>
 	</tr>
       {% endfor %}
     </table>
+
     <h2>やること</h2>
     <ul>
-      <li>情報取得時刻を表示する。</li>
-      <li>wish listページが取得できなかったときは削除する。</li>
-      <li>一覧表に無かったときは削除する。</li>
       <li>wish listページが複数ページだった時の処理。</li>
-      <li><strike>数値を3桁ずつに区切る。</strike></li>
+      <li>スタイルシート</li>
     </ul>
+
+    <h2>履歴</h2>
+    <ul>
+      <li>2011-4-19 並び順を変えました。無くなったページを削除するようにしました。<li>
+      <li>2011-4-18 公開</li>
+    </ul>
+
     <hr/>
-    更新日：2011-4-18<br/>
+    更新日：2011-4-19<br/>
     連絡先：<a href="http://twitter.com/ssci">@ssci</a><br/>
     ソース：<a href="https://github.com/sgk/amazon-wish-japan">https://github.com/sgk/amazon-wish-japan</a>
   </body>

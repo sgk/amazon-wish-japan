@@ -10,6 +10,7 @@ from google.appengine.ext import db
 
 import datetime
 import time
+import operator
 import amazon
 
 CRAWL_INTERVAL = 5 * 60
@@ -18,64 +19,63 @@ CRAWL_INTERVAL = 5 * 60
 
 VERY_OLD = datetime.datetime.fromtimestamp(0)
 
-class WishId(db.Model):
+class WishListPage(db.Model):
   # key: Wishlist id
-  updated = db.DateTimeProperty(auto_now=True)
-  page_updated = db.DateTimeProperty(default=VERY_OLD)
-
-class WishPage(db.Model):
-  # key: Wishlist id
+  updated = db.DateTimeProperty(default=VERY_OLD)
   owner_name = db.StringProperty()
-  wish_items = db.IntegerProperty()
-  got_items = db.IntegerProperty()
+  wish_pieces = db.IntegerProperty()
+  got_pieces = db.IntegerProperty()
   wish_amount = db.IntegerProperty()
   got_amount = db.IntegerProperty()
 
 ################################################################################
 
-# XXX 最終更新時刻を表示する。
 # XXX 重要度を記録するか？
 
 # cronから起動する。
-@app.route('/update_wishid_list')
+@app.route('/update_list')
 def update_wishid_list():
-  for id in amazon.get_wishid_list():
-    WishId.get_or_insert(id)
-    WishPage.get_or_insert(
+  ids = list(amazon.get_wishid_list())
+  for id in ids:
+    WishListPage.get_or_insert(
       id,
       owner_name=id,
     )
-  # XXX 古くなったまま現れない物は削除する。
-  return ''
+  for page in WishListPage.all():
+    if page.key().name() not in ids:
+      page.delete()
+  return str(len(ids))
 
 # cronから起動する。
 # 30秒の時間制限いっぱいまで、クロールする。
-@app.route('/update_wish_pages')
+@app.route('/update_pages')
 def update_wish_pages():
+  count = 0
   older_than = datetime.datetime.fromtimestamp(time.time() - CRAWL_INTERVAL)
-  ids = WishId.all().filter('page_updated <', older_than).order('page_updated')
-  for id in ids:
+  pages = WishListPage.all().filter('updated <', older_than).order('updated')
+  for page in pages:
     try:
-      owner, wp, gp, wa, ga = amazon.get_wish_list(id.key().name())
+      owner, wp, gp, wa, ga = amazon.get_wish_list(page.key().name())
     except:
-      # XXX 削除する。
+      page.delete()
       continue
-    WishPage(
-      key_name=id.key().name(),
-      wishid=id,
-      owner_name=owner,
-      wish_items=wp,
-      got_items=gp,
-      wish_amount=wa,
-      got_amount=ga,
-    ).put()
-    id.page_updated = datetime.datetime.now()
-    id.put()
-  return ''
+    page.updated = datetime.datetime.now()
+    page.owner_name = owner
+    page.wish_pieces = wp
+    page.got_pieces = gp
+    page.wish_amount = wa
+    page.got_amount = ga
+    page.put()
+    count += 1
+  return str(count)
 
 @app.route('/')
 def top():
-  pages = WishPage.all().order('-wish_amount')
+  pages = WishListPage.all().order('-wish_amount')
+  pages = list(pages)
+  pages.sort(key=operator.attrgetter('owner_name'))
+  pages.sort(key=operator.attrgetter('wish_pieces'), reverse=True)
+  pages.sort(key=operator.attrgetter('wish_amount'), reverse=True)
   return render_template('top.html', pages=pages)
 
 @app.template_filter('comma')
@@ -85,3 +85,7 @@ def comma_filter(value):
     value, tail = divmod(value, 1000)
     r = ',%03d%s' % (tail, r)
   return '%d%s' % (value, r)
+
+@app.template_filter('minutes_ago')
+def minutes_ago_filter(value):
+  return ((datetime.datetime.now() - value).seconds + 30) / 60
