@@ -1,6 +1,6 @@
 #vim:fileencoding=utf-8
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, abort
 app = Flask(__name__)
 app.debug = True
 from jinja2 import environment
@@ -29,15 +29,53 @@ class WishListPage(db.Model):
   got_amount = db.IntegerProperty()
 
 class Item(db.Model):
+  # key: id.name
   page = db.ReferenceProperty()
   name = db.StringProperty()		# 商品名
   price = db.IntegerProperty()		# 価格
   pieces = db.IntegerProperty()		# 個数
   tweeted = db.DateTimeProperty(default=VERY_OLD)
 
+class Config(db.Model):
+  # key: config key
+  value = db.StringProperty()
+
 ################################################################################
 
 # XXX 重要度を記録するか？
+
+# Configuration
+@app.route('/config', methods=['GET', 'POST'])
+def config():
+  if Config.get_by_key_name('configured'):
+    abort(404)
+  if request.method == 'GET':
+    return render_template('config.html')
+
+  import os, base64
+  Config(
+    key_name='consumer_key',
+    value=request.form.get('consumer_key', '').strip()
+  ).put()
+
+  Config(
+    key_name='consumer_secret',
+    value=request.form.get('consumer_secret', '').strip()
+  ).put()
+
+  Config(key_name='configured', value='yes').put()
+
+  load_config()
+  return redirect('/')
+
+def load_config():
+  def get(key):
+    o = Config.get_by_key_name(key)
+    return str(o.value) if o else ''	# DB value is unicode.
+
+  global consumer_key, consumer_secret
+  consumer_key = get('consumer_key')
+  consumer_secret = get('consumer_secret')
 
 # cronから起動する。
 @app.route('/update_list')

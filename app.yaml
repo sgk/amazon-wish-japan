@@ -10,6 +10,8 @@ handlers:
 - url: /update_pages
   script: cgi.py
   login: admin
+- url: /config
+  script: cgi.py
 - url: /
   script: cgi.py
 
