@@ -1,6 +1,6 @@
 #vim:fileencoding=utf-8
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 app = Flask(__name__)
 app.debug = True
 from jinja2 import environment
@@ -66,10 +66,21 @@ def update_wish_pages():
     page.wish_amount = wa
     page.got_amount = ga
     page.put()
+    memcache.flush_all()
     count += 1
   return str(count)
 
+def page_cache(func):
+  def decorated(*args, **kw):
+    data = memcache.get(request.path)
+    if not data or not isinstance(data, str):
+      data = func(*args, **kw)
+      memcache.set(request.path, data)
+    return data
+  return decorated
+
 @app.route('/')
+@page_cache
 def top():
   pages = WishListPage.all().order('-wish_amount')
   pages = list(pages)
