@@ -5,15 +5,15 @@ api_version: 1
 
 handlers:
 - url: /update_list
-  script: cgi.py
+  script: wsgi.py
   login: admin
 - url: /update_pages
-  script: cgi.py
+  script: wsgi.py
   login: admin
 - url: /config
-  script: cgi.py
+  script: wsgi.py
 - url: /
-  script: cgi.py
+  script: wsgi.py
 
 builtins:
 - datastore_admin: on
