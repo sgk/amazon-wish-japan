@@ -4,7 +4,7 @@
 import urllib2
 import re
 
-WISHID_LIST_URL = u'http://www.amazon.co.jp/gp/registry/search.html?type=wishlist&field-name=【被災地】&page=%d'
+WISHLIST_LIST_URL = u'http://www.amazon.co.jp/gp/registry/search.html?type=wishlist&field-name=【被災地】&page=%d'
 RE_LIST_COUNT = re.compile(u'- (\d+) 件が一致しました。')
 RE_WISHID = re.compile('<a href="/registry/wishlist/([0-9A-Z]+)">')
 
@@ -12,14 +12,14 @@ WISH_LIST_URL = u'http://www.amazon.co.jp/registry/wishlist/%s?reveal=all&filter
 RE_OWNER = re.compile('<tr><th>For</th><td class="profileInfoField" id="profile-name-Field">([^<]*)</td></tr>')
 RE_ALL_ITEMS_COUNT = re.compile('<span id="topItemCount">(\d+)</span>')
 RE_WISH_ITEMS_COUNT = re.compile('<span class="regListCount">(\d+)</span>')
-RE_ITEM = re.compile('<td class="tiny">(.*)</td>\s*<td align="center" class="tiny">(\d*)</td>\s*<td align="center" class="tiny">(\d*)</td>\s*<td align="center" class="tiny">([^<]*)</td>')
+RE_ITEM = re.compile('<strong>\s*<a href="[^"]*">([^<]*)</a>\s*.*</td>\s*<td>.*</td>\s*<td class="tiny">(.*)</td>\s*<td align="center" class="tiny">(\d*)</td>\s*<td align="center" class="tiny">(\d*)</td>\s*<td align="center" class="tiny">([^<]*)</td>')
 RE_PRICE = re.compile('\.JPY\.(\d+)"')
 
-WISH_LIST_PAGE = u'http://www.amazon.co.jp/registry/wishlist/%s'
+################################################################################
 
 RE_ENTITY = re.compile('&#(\d+);')
 
-def entity_helper(m):
+def decode_entity_helper(m):
   id = m.group(1)
   try:
     return unichr(int(id))
@@ -27,7 +27,7 @@ def entity_helper(m):
     return '&#%s;' % id
 
 def decode_entity(s):
-  return RE_ENTITY.sub(entity_helper, s)
+  return RE_ENTITY.sub(decode_entity_helper, s)
 
 def get_page_text(url):
   page = urllib2.urlopen(url.encode('utf-8'))
@@ -35,11 +35,13 @@ def get_page_text(url):
   page = page.decode('cp932')
   return page
 
-def get_wishid_list():
+################################################################################
+
+def get_wishlist_list():
   page = 0
   while True:
     page += 1
-    text = get_page_text(WISHID_LIST_URL % page)
+    text = get_page_text(WISHLIST_LIST_URL % page)
     m = RE_LIST_COUNT.search(text)
     count = int(m.group(1))
     for m in RE_WISHID.finditer(text):
@@ -47,7 +49,7 @@ def get_wishid_list():
     if page * 25 >= count:
       break
 
-def get_wish_list(id):
+def get_wishlist_page(id):
   text = get_page_text(WISH_LIST_URL % id)
   m = RE_OWNER.search(text)
   owner = decode_entity(m.group(1))
@@ -57,33 +59,31 @@ def get_wish_list(id):
   #m = RE_WISH_ITEMS_COUNT.search(text)
   #wish_items = int(m.group(1)) if m else 0
 
-  wish_pieces = got_pieces = 0
-  wish_amount = got_amount = 0
-  # XXX 複数ページの処理が必要。
-  for m in RE_ITEM.finditer(text):
-    mm = RE_PRICE.search(m.group(1))
-    price = int(mm.group(1)) if mm else 0
-    all_ = int(m.group(2))
-    got = int(m.group(3))
-    #priority = m.group(4)
-    if all_ > got:
-      wish_pieces += all_ - got
-      wish_amount += (all_ - got) * price
-    got_pieces += got
-    got_amount += got * price
+  def iteritem():
+    # XXX 複数ページの処理が必要。
+    # 「何でも欲しい物ボタン」の商品は無視する。
+    for m in RE_ITEM.finditer(text):
+      name = decode_entity(m.group(1))
+      mm = RE_PRICE.search(m.group(2))
+      price = int(mm.group(1)) if mm else 0
+      all_ = int(m.group(3))
+      got = int(m.group(4))
+      #priority = m.group(5)
+      wish = max(all_ - got, 0)
+      yield name, price, wish, got
 
-  return owner, wish_pieces, got_pieces, wish_amount, got_amount
+  return owner, iteritem()
 
-def wish_list_page_from_id(id):
-  return WISH_LIST_PAGE % id
+################################################################################
 
 def main(ids):
   if not ids:
-    ids = get_wishid_list()
+    ids = get_wishlist_list()
   for id in ids:
-    owner, wp, gp, wa, ga = get_wish_list(id)
+    owner, iteritem = get_wishlist_page(id)
     print owner.encode('utf-8')
-    print wp, gp, wa, ga
+    for name, price, wish, got in iteritem:
+      print name.encode('utf-8'), price, wish, got
 
 if __name__ == '__main__':
   import sys

@@ -28,14 +28,21 @@ class WishListPage(db.Model):
   wish_amount = db.IntegerProperty()
   got_amount = db.IntegerProperty()
 
+class Item(db.Model):
+  page = db.ReferenceProperty()
+  name = db.StringProperty()		# 商品名
+  price = db.IntegerProperty()		# 価格
+  pieces = db.IntegerProperty()		# 個数
+  tweeted = db.DateTimeProperty(default=VERY_OLD)
+
 ################################################################################
 
 # XXX 重要度を記録するか？
 
 # cronから起動する。
 @app.route('/update_list')
-def update_wishid_list():
-  ids = list(amazon.get_wishid_list())
+def update_list():
+  ids = list(amazon.get_wishlist_list())
   for id in ids:
     WishListPage.get_or_insert(id)
   for page in WishListPage.all():
@@ -46,16 +53,43 @@ def update_wishid_list():
 # cronから起動する。
 # 30秒の時間制限いっぱいまで、クロールする。
 @app.route('/update_pages')
-def update_wish_pages():
+def update_pages():
   count = 0
   older_than = datetime.datetime.fromtimestamp(time.time() - CRAWL_INTERVAL)
   pages = WishListPage.all().filter('updated <', older_than).order('updated')
   for page in pages:
+    id = page.key().name()
     try:
-      owner, wp, gp, wa, ga = amazon.get_wish_list(page.key().name())
+      owner, iteritems = amazon.get_wishlist_page(id)
     except:
       page.delete()
       continue
+
+    # items
+    names = set(item.name for item in Item.all().filter('page', page))
+    wp = gp = wa = ga = 0
+    for name, price, wish, got in iteritems:
+      wp += wish
+      gp += got
+      wa += wish * price
+      ga += got * price
+      Item.get_or_insert(
+	key_name=('%s.%s' % (id, name)),
+	page=page,
+	name=name,
+	price=price,
+	pieces=wish,
+      )
+      try:
+	names.remove(name)
+      except KeyError:
+	pass
+    for name in names:
+      o = Item.get_by_key_name('%s.%s' % (id, name))
+      if o:
+	o.delete()
+
+    # page
     page.updated = datetime.datetime.now()
     page.owner_name = owner
     page.wish_pieces = wp
