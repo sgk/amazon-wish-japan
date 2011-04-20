@@ -73,6 +73,8 @@ def update_pages():
       gp += got
       wa += wish * price
       ga += got * price
+      if wish == 0:
+	continue
       Item.get_or_insert(
 	key_name=('%s.%s' % (id, name)),
 	page=page,
