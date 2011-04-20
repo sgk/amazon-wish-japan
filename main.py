@@ -37,10 +37,7 @@ class WishListPage(db.Model):
 def update_wishid_list():
   ids = list(amazon.get_wishid_list())
   for id in ids:
-    WishListPage.get_or_insert(
-      id,
-      owner_name=id,
-    )
+    WishListPage.get_or_insert(id)
   for page in WishListPage.all():
     if page.key().name() not in ids:
       page.delete()
@@ -82,7 +79,8 @@ def page_cache(func):
 @app.route('/')
 @page_cache
 def top():
-  pages = WishListPage.all().order('-wish_amount')
+  pages = WishListPage.all()
+  pages = pages.filter('owner_name !=', None)
   pages = list(pages)
   pages.sort(key=operator.attrgetter('owner_name'))
   pages.sort(key=operator.attrgetter('wish_pieces'), reverse=True)
