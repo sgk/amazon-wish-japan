@@ -3,6 +3,9 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
     <title>被災地ほしい物リスト一覧</title>
     <style type="text/css">
+      .itemsCol {
+	text-align: right;
+      }
       .piecesCol {
 	text-align: right;
       }
@@ -31,7 +34,7 @@
     </p>
     <p>
       アマゾンで買って、送り先は被災地。アマゾンを使って被災地の支援ができます。
-      簡単です。手順については、このページ下の方の<a href="#proc">「手順」の項</a>で説明します。
+      簡単です。手順については、このページ下の方の<a href="#proc">「手順」の項</a>で説明します。手順なんて知ってるよ！って方も、一度はお読みください。
     </p>
     <p>
       <a href="http://www.amazon.co.jp/gp/registry/search.html?ie=UTF8&type=wishlist&field-location=&field-name=%E3%80%90%E8%A2%AB%E7%81%BD%E5%9C%B0%E3%80%91">アマゾンの「ほしい物リスト」のページから検索できます</a>が、金額や点数が一覧になっていないため、どこが現在支援を必要としているかわかりづらいです。
@@ -44,35 +47,62 @@
       サーバ（計算機資源）は、グーグルさん提供です。
     </p>
 
+    <h2>現在の概要</h2>
     <table border="1">
       <tr>
-	<th>支援先</th>
-	<th colspan="2">支援が必要</th>
-	<th colspan="2">支援済み</th>
-	<th>情報取得</th>
+	<td>支援が必要</td>
+	<td class="itemsCol">{{ wi|comma }}種</td>
+	<td class="piecesCol">{{ wp|comma }}個</td>
+	<td class="amountCol">{{ wa|comma }}円</td>
       </tr>
-      {% for page in pages %}
+      <tr>
+	<td>支援済み</td>
+	<td class="itemsCol">{{ gi|comma }}種</td>
+	<td class="piecesCol">{{ gp|comma }}個</td>
+	<td class="amountCol">{{ ga|comma }}円</td>
+      </tr>
+    </table>
+
+    <h2>一覧表</h2>
+    <table border="1">
+      <thead>
 	<tr>
-	  <td>
-	    <a href="http://www.amazon.co.jp/registry/wishlist/{{ page.key().name() }}">{{ page.owner_name }}</a>
-	  </td>
-	  <td class="piecesCol">
-	    {{ page.wish_pieces|default(0, true)|comma }}個
-	  </td>
-	  <td class="amountCol">
-	    {{ page.wish_amount|default(0, true)|comma }}円
-	  </td>
-	  <td class="piecesCol">
-	    {{ page.got_pieces|default(0, true)|comma }}個
-	  </td>
-	  <td class="amountCol">
-	    {{ page.got_amount|default(0, true)|comma }}円
-	  </td>
-	  <td class="minutesAgoCol">
-	    {{ page.updated|minutes_ago }}分前
-	  </td>
+	  <th>支援先</th>
+	  <th colspan="3">支援が必要</th>
+	  <th colspan="3">支援済み</th>
+	  <th>情報取得</th>
 	</tr>
-      {% endfor %}
+      </thead>
+      <tbody>
+	{% for page in pages %}
+	  <tr>
+	    <td>
+	      <a href="http://www.amazon.co.jp/registry/wishlist/{{ page.key().name() }}">{{ page.owner_name }}</a>
+	    </td>
+	    <td class="itemsCol">
+	      {{ page.wish_items|default(0, true)|comma }}種
+	    </td>
+	    <td class="piecesCol">
+	      {{ page.wish_pieces|default(0, true)|comma }}個
+	    </td>
+	    <td class="amountCol">
+	      {{ page.wish_amount|default(0, true)|comma }}円
+	    </td>
+	    <td class="itemsCol">
+	      {{ page.got_items|default(0, true)|comma }}種
+	    </td>
+	    <td class="piecesCol">
+	      {{ page.got_pieces|default(0, true)|comma }}個
+	    </td>
+	    <td class="amountCol">
+	      {{ page.got_amount|default(0, true)|comma }}円
+	    </td>
+	    <td class="minutesAgoCol">
+	      {{ page.updated|minutes_ago }}分前
+	    </td>
+	  </tr>
+	{% endfor %}
+      </tbody>
     </table>
 
     <a name="proc" id="proc"><h2>手順</h2></a>

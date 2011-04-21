@@ -23,10 +23,12 @@ class WishListPage(db.Model):
   # key: Wishlist id
   updated = db.DateTimeProperty(default=VERY_OLD)
   owner_name = db.StringProperty()
-  wish_pieces = db.IntegerProperty()
-  got_pieces = db.IntegerProperty()
-  wish_amount = db.IntegerProperty()
-  got_amount = db.IntegerProperty()
+  wish_items = db.IntegerProperty(default=0)
+  wish_pieces = db.IntegerProperty(default=0)
+  wish_amount = db.IntegerProperty(default=0)
+  got_items = db.IntegerProperty(default=0)
+  got_pieces = db.IntegerProperty(default=0)
+  got_amount = db.IntegerProperty(default=0)
 
 class Item(db.Model):
   # key: id.name
@@ -105,12 +107,17 @@ def update_pages():
 
     # items
     names = set(item.name for item in Item.all().filter('page', page))
-    wp = gp = wa = ga = 0
+    wi = gi = wp = gp = wa = ga = 0
     for name, price, wish, got in iteritems:
       wp += wish
       gp += got
       wa += wish * price
       ga += got * price
+      if wish > 0:
+	wi += 1
+      if got > 0:
+	gi += 1
+
       if wish == 0:
 	continue
       Item.get_or_insert(
@@ -132,9 +139,11 @@ def update_pages():
     # page
     page.updated = datetime.datetime.now()
     page.owner_name = owner
+    page.wish_items = wi
     page.wish_pieces = wp
-    page.got_pieces = gp
     page.wish_amount = wa
+    page.got_items = gi
+    page.got_pieces = gp
     page.got_amount = ga
     page.put()
     memcache.flush_all()
@@ -159,7 +168,20 @@ def top():
   pages.sort(key=operator.attrgetter('owner_name'))
   pages.sort(key=operator.attrgetter('wish_pieces'), reverse=True)
   pages.sort(key=operator.attrgetter('wish_amount'), reverse=True)
-  return render_template('top.html', pages=pages)
+
+  wi = gi = wp = gp = wa = ga = 0
+  for page in pages:
+    wi += page.wish_items
+    wp += page.wish_pieces
+    wa += page.wish_amount
+    gi += page.got_items
+    gp += page.got_pieces
+    ga += page.got_amount
+
+  return render_template('top.html',
+    pages=pages,
+    wi=wi, wp=wp, wa=wa, gi=gi, gp=gp, ga=ga,
+  )
 
 @app.template_filter('comma')
 def comma_filter(value):
