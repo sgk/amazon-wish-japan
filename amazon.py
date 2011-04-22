@@ -9,7 +9,7 @@ RE_LIST_COUNT = re.compile(u'- (\d+) 件が一致しました。')
 RE_WISHID = re.compile('<a href="/registry/wishlist/([0-9A-Z]+)">')
 
 WISH_LIST_URL = u'http://www.amazon.co.jp/registry/wishlist/%s?reveal=all&filter=all&sort=date-added&layout=compact&page=%d'
-RE_OWNER = re.compile('<tr><th>For</th><td class="profileInfoField" id="profile-name-Field">([^<]*)</td></tr>')
+RE_OWNER = re.compile(u'<tr><th>受取人</th><td class="profileInfoField" id="profile-name-Field">([^<]*)</td></tr>')
 RE_ALL_ITEMS_COUNT = re.compile('<span id="topItemCount">(\d+)</span>')
 RE_WISH_ITEMS_COUNT = re.compile('<span class="regListCount">(\d+)</span>')
 RE_ITEM = re.compile('<strong>\s*<a href="[^"]*">(?P<name>.*)</a>\s*.*</td>\s*<td>.*</td>\s*<td class="tiny">(?P<price>.*)</td>\s*<td align="center" class="tiny">(?P<all>\d*)</td>\s*<td align="center" class="tiny">(?P<got>\d*)</td>\s*<td align="center" class="tiny">(?P<priority>[^<]*)</td>')
