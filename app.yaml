@@ -12,6 +12,16 @@ handlers:
   login: admin
 - url: /config
   script: wsgi.py
+  login: admin
+- url: /login
+  script: wsgi.py
+  login: admin
+- url: /callback
+  script: wsgi.py
+  login: admin
+- url: /tweet_new_item
+  script: wsgi.py
+  login: admin
 - url: /
   script: wsgi.py
 

@@ -5,3 +5,6 @@ cron:
 - description: update from the wishlist page contents
   url: /update_pages
   schedule: every 5 minutes
+- description: tweet newly found items
+  url: /tweet_new_item
+  schedule: every 1 minutes

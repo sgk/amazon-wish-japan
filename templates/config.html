@@ -1,16 +1,18 @@
-<html>
-  <body>
-    You can save this configuration only once.
-    <form method="POST">
-      <label>
-	Consumer Key:
-	<input type="text" name="consumer_key" />
-      </label><br />
-      <label>
-	Consumer Secret:
-	<input type="text" name="consumer_secret" />
-      </label><br />
-      <input type="submit" value="Save" />
-    </form>
-  </body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+  <form method="POST">
+    <label>
+      Consumer Key:
+      <input type="text" name="consumer_key" value="{{ consumer_key }}" />
+    </label><br />
+    <label>
+      Consumer Secret:
+      <input type="text" name="consumer_secret" value="{{ consumer_secret }}" />
+    </label><br />
+    <label>
+      Google URL Shortener API Key:
+      <input type="text" name="google_api_key" value="{{ google_api_key }}" />
+    </label><br />
+    <input type="submit" value="Save" />
+  </form>
+{% endblock %}
