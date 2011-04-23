@@ -24,4 +24,4 @@ def google(url, apikey=None):
 if __name__ == '__main__':
   import sys
   for url in sys.argv[1:]:
-    print shorten(url)
+    print google(url)
