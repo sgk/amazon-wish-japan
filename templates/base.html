@@ -17,36 +17,92 @@
       }
       .important {
 	font-weight: bold;
-	color: red;
+	color: #F36;
+      }
+      body{
+	background: #FFF;
+	color: #333;
+	padding: 0;
+	margin: 20px;
+	line-height: 150%;
+      }
+      #wrapper{
+	margin: 0 auto;
+	width: 780px;
+	padding: 30px;
+	background: #FFF;
+	border-radius: 8px;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-box-shadow: 0px 1px 4px 1px #777; /* Safari, Chrome用 */
+	-moz-box-shadow: 0px 1px 4px 1px #777; /* Firefox用 */
+	box-shadow: 0px 1px 4px 1px #777; /* CSS3 */
+      }
+      h1{
+	margin: 5px 0 50px 0;
+	padding: 0;
+      }
+      h2{
+	margin: 40px 0 15px 0;
+	border-top: 1px #4CD dotted;
+	padding: 10px 0 0 0;
+	font-size: 140%;
+      }
+      table{
+	border: 1px #CCC solid;
+	border-collapse: collapse;
+	font-size: 80%;
+      }
+      th, td {
+	border: medium none;
+	border: 1px solid #CCC;
+	text-align: left;
+	vertical-align: top;
+	padding: 10px 5px;
+      }
+      p {
+	line-height: 150%;
+	font-size: 90%;
+      }
+      li {
+	margin: 12px 0;
+	width: 90%;
+      }
+      hr {
+	margin: 40px 0 20px 0;
+	border: none;
+	border-top: 1px #4CD dotted;
       }
     </style>
   </head>
   <body>
-    <h1><a href="{{ url_for("top") }}">被災地ほしい物リスト一覧</a></h1>
+    <div id="wrapper">
+      <h1><a href="{{ url_for("top") }}">被災地ほしい物リスト一覧</a></h1>
 
-    <iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Famazon-wish-japan.appspot.com%2F&amp;layout=standard&amp;show_faces=false&amp;width=450&amp;action=like&amp;font&amp;colorscheme=light&amp;height=35" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:35px;" allowTransparency="true"></iframe>
-    <div>
-      <a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="ssci">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+      <iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Famazon-wish-japan.appspot.com%2F&amp;layout=standard&amp;show_faces=false&amp;width=450&amp;action=like&amp;font&amp;colorscheme=light&amp;height=35" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:35px;" allowTransparency="true"></iframe>
+      <div>
+	<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="ssci">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+      </div>
+
+      {% with messages = get_flashed_messages() %}
+	{% if messages %}
+	  <div class="flash_message">
+	    <ul>
+	      {% for message in messages %}
+		<li>{{ message }}</li>
+	      {% endfor %}
+	    </ul>
+	  </div>
+	{% endif %}
+      {% endwith %}
+
+      {% block content %}
+      {% endblock %}
+
+      <hr/>
+      更新日：2011-4-23<br/>
+      連絡先：<a href="http://twitter.com/ssci">@ssci</a><br/>
+      ソース：<a href="https://github.com/sgk/amazon-wish-japan">https://github.com/sgk/amazon-wish-japan</a>
     </div>
-
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-	<div class="flash_message">
-	  <ul>
-	    {% for message in messages %}
-	      <li>{{ message }}</li>
-	    {% endfor %}
-	  </ul>
-	</div>
-      {% endif %}
-    {% endwith %}
-
-    {% block content %}
-    {% endblock %}
-
-    <hr/>
-    更新日：2011-4-23<br/>
-    連絡先：<a href="http://twitter.com/ssci">@ssci</a><br/>
-    ソース：<a href="https://github.com/sgk/amazon-wish-japan">https://github.com/sgk/amazon-wish-japan</a>
   </body>
 </html>
