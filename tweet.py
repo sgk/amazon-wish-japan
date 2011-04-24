@@ -106,7 +106,7 @@ def tweet_new_item():
       'http://www.amazon.co.jp/registry/wishlist/' + item.page.key().name(),
       google_api_key,
     )
-    postamble = u'一覧http://t.co/CRfM4Zy'
+    postamble = u' 一覧http://t.co/CRfM4Zy'
 
     n = len(preamble) + len(item_name) + len(owner_name) + len(url) + len(postamble)- 140
     if n > 0:
