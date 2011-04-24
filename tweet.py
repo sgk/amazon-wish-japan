@@ -102,20 +102,21 @@ def tweet_new_item():
     preamble = u'被災地必要物資：'
     item_name = item.name
     owner_name = ' ' + item.page.owner_name
-    url = ' ' + shorten.google(
+    url = shorten.google(
       'http://www.amazon.co.jp/registry/wishlist/' + item.page.key().name(),
       google_api_key,
     )
+    postamble = u'一覧http://t.co/CRfM4Zy'
 
-    n = len(preamble) + len(item_name) + len(owner_name) + len(url) - 140
+    n = len(preamble) + len(item_name) + len(owner_name) + len(url) + len(postamble)- 140
     if n > 0:
       item_name = item_name[:70] + u'…'
-      n = len(preamble) + len(item_name) + len(owner_name) + len(url) - 140
+      n = len(preamble) + len(item_name) + len(owner_name) + len(url) + len(postamble)- 140
       if n > 0:
 	n -= 2
 	owner_name = owner_name[:-n] + u'…'
 
-    text = preamble + item_name + owner_name + url
+    text = preamble + item_name + owner_name + url + postamble
 
     try:
       api.update_status(text)
