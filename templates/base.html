@@ -73,11 +73,25 @@
 	border: none;
 	border-top: 1px #4CD dotted;
       }
+
+      h1 a img {
+	vertical-align: top;
+	border: 0;
+      }
+      h1 a {
+	text-decoration: none;
+	color: #333;
+      }
     </style>
   </head>
   <body>
     <div id="wrapper">
-      <h1><a href="{{ url_for("top") }}">被災地ほしい物リスト一覧</a></h1>
+      <h1>
+	<a href="{{ url_for("top") }}">
+	  <img src="http://a3.twimg.com/profile_images/1322368141/282922826_reasonably_small.png" alt="被災地ほしい物リスト一覧"/>
+	  被災地ほしい物リスト一覧
+	</a>
+      </h1>
 
       <iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Famazon-wish-japan.appspot.com%2F&amp;layout=standard&amp;show_faces=false&amp;width=450&amp;action=like&amp;font&amp;colorscheme=light&amp;height=35" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:35px;" allowTransparency="true"></iframe>
       <div>
