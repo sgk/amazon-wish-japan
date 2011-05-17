@@ -56,6 +56,13 @@
       {% for page in pages %}
 	<tr>
 	  <td>
+	    {% for certifier in page.certifiers %}
+	      {% if certifier.icon %}
+		<img src="{{ certifier.icon }}" width="{{ certifier.width }}" height="{{ certifier.height }}" alt="{{ certifier.alt }}" />
+	      {% else %}
+		{{ certifier.alt }}
+	      {% endif %}
+	    {% endfor %}
 	    <a href="http://www.amazon.co.jp/registry/wishlist/{{ page.key().name() }}">{{ page.owner_name }}</a>
 	  </td>
 	  <td class="itemsCol">

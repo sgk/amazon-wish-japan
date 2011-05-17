@@ -22,8 +22,18 @@ handlers:
 - url: /tweet_new_item
   script: wsgi.py
   login: admin
+
+- url: /add_certifier
+  script: wsgi.py
+  login: admin
+- url: /edit/.*
+  script: wsgi.py
+
+- url: /static/
+  static_dir: static
 - url: /
   script: wsgi.py
 
 builtins:
 - datastore_admin: on
+- remote_api: on

@@ -6,7 +6,10 @@ from google.appengine.api import memcache
 import datetime
 import time
 import operator
+import functools
+
 import amazon
+import auth
 from models import *
 
 app = Flask('app')
@@ -81,18 +84,18 @@ def update_pages():
     page.got_pieces = gp
     page.got_amount = ga
     page.put()
-    memcache.flush_all()
     count += 1
+  memcache.flush_all()
   return str(count)
 
 def page_cache(func):
+  @functools.wraps(func)
   def decorated(*args, **kw):
     data = memcache.get(request.path)
     if not data or not isinstance(data, str):
       data = func(*args, **kw)
       memcache.set(request.path, data)
     return data
-  decorated.__name__ = func.__name__	# for "url_for" function.
   return decorated
 
 @app.route('/')
@@ -130,3 +133,59 @@ def comma_filter(value):
 @app.template_filter('minutes_ago')
 def minutes_ago_filter(value):
   return ((datetime.datetime.now() - value).seconds + 30) / 60
+
+@app.route('/add_certifier', methods=['GET', 'POST'])
+def add_certifier():
+  if request.method == 'GET':
+    return render_template('add_certifier.html')
+  name = request.form.get('name', '').strip().lower()
+  Certifier.get_or_insert(name,
+    icon=request.form.get('icon', '').strip(),
+    width=int(request.form.get('width', '').strip()),
+    height=int(request.form.get('height', '').strip()),
+    alt=request.form.get('alt', '').strip(),
+    password=request.form.get('password', ''),
+  )
+  return redirect(url_for('edit', certifier=name))
+
+def check_auth(username, password):
+  certifier = Certifier.get_by_key_name(username)
+  return certifier and certifier.password == password
+
+@app.route('/edit/<certifier>', methods=['GET', 'POST'])
+@auth.login_required(check_auth)
+def edit(certifier):
+  certifier = certifier.lower()
+  if request.authorization.username != certifier:
+    abort(404)
+  certifier = Certifier.get_by_key_name(certifier)
+  if not certifier:
+    abort(404)
+
+  if request.method == 'GET':
+    pages = WishListPage.all()
+    pages = pages.filter('owner_name !=', None)
+    pages = list(pages)
+    pages.sort(key=operator.attrgetter('owner_name'))
+    pages.sort(key=operator.attrgetter('wish_pieces'), reverse=True)
+    pages.sort(key=operator.attrgetter('wish_amount'), reverse=True)
+    return render_template('edit.html', certifier=certifier, pages=pages)
+
+  marks = request.form.getlist('marks')
+  pages = WishListPage.all()
+  pages = pages.filter('owner_name !=', None)
+  pages = list(pages)
+  for page in pages:
+    if page.key().name() in marks:
+      if not certifier in page.certifiers:
+	PageCertifier(
+	  page=page,
+	  certifier=certifier,
+	).put()
+    else:
+      if certifier in page.certifiers:
+	for o in page.pagecertifier_set:
+	  if o.certifier == certifier:
+	    o.delete()
+
+  return redirect(request.path)

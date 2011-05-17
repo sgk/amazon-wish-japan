@@ -16,6 +16,29 @@ class WishListPage(db.Model):
   got_pieces = db.IntegerProperty(default=0)
   got_amount = db.IntegerProperty(default=0)
 
+  @property
+  def certifiers(self):
+    return (o.certifier for o in self.pagecertifier_set)
+
+class Certifier(db.Model):
+  # key: lower case name		# 'amazon'
+  icon = db.StringProperty()		# アイコンファイルのURL
+  width = db.IntegerProperty()
+  height = db.IntegerProperty()
+  alt = db.StringProperty()		# iconのaltテキスト
+  password = db.StringProperty()
+
+  @property
+  def pages(self):
+    return (o.page for o in self.pagecertifier_set)
+
+  def __eq__(self, arg):
+    return self.key() == arg.key()
+
+class PageCertifier(db.Model):
+  page = db.ReferenceProperty(WishListPage)
+  certifier = db.ReferenceProperty(Certifier)
+
 class Item(db.Model):
   # key: id.name
   page = db.ReferenceProperty()
