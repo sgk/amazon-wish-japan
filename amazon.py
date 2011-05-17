@@ -4,7 +4,7 @@
 import urllib2
 import re
 
-WISHLIST_LIST_URL = u'http://www.amazon.co.jp/gp/registry/search.html?type=wishlist&field-name=【被災地】&page=%d'
+WISHLIST_LIST_URL = u'http://www.amazon.co.jp/gp/registry/search.html?type=wishlist&field-name=【被災地】|【避難所】&page=%d'
 RE_LIST_COUNT = re.compile(u'- (\d+) 件が一致しました。')
 RE_WISHID = re.compile('<a href="/registry/wishlist/([0-9A-Z]+)">')
 
