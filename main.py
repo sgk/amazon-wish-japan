@@ -157,7 +157,7 @@ def check_auth(username, password):
 def edit(certifier):
   certifier = certifier.lower()
   if request.authorization.username != certifier:
-    abort(404)
+    abort(401)
   certifier = Certifier.get_by_key_name(certifier)
   if not certifier:
     abort(404)
