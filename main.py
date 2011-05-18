@@ -1,12 +1,16 @@
 #vim:fileencoding=utf-8
 
-from flask import Flask, render_template, request, redirect, url_for, abort
+from flask import (
+  Flask, render_template, request, redirect, url_for, abort,
+  Response
+)
 from google.appengine.api import memcache
 
 import datetime
 import time
 import operator
 import functools
+import csv
 
 import amazon
 import auth
@@ -189,3 +193,34 @@ def edit(certifier):
 	    o.delete()
 
   return redirect(request.path)
+
+@app.route('/download/<certifier>.csv')
+@auth.login_required(check_auth)
+def download(certifier):
+  certifier = certifier.lower()
+  if request.authorization.username != certifier:
+    abort(401)
+  certifier = Certifier.get_by_key_name(certifier)
+  if not certifier:
+    abort(404)
+
+  response = Response(
+    headers={'content-disposition': 'attachment; filename=catalog.csv'},
+    content_type='text/csv; charset=sjis',
+  )
+  writer = csv.writer(response.stream, quoting=csv.QUOTE_NONNUMERIC)
+
+  writer.writerow(('ID', 'name', 'wish_items', 'wish_pieces', 'wish_amount', 'got_items', 'got_pieces', 'got_amount'))
+  for page in certifier.pages:
+    writer.writerow((
+      page.key().name(),
+      page.owner_name.replace(u'\u200b', '').encode('cp932'),
+      page.wish_items,
+      page.wish_pieces,
+      page.wish_amount,
+      page.got_items,
+      page.got_pieces,
+      page.got_amount,
+    ))
+
+  return response

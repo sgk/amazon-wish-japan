@@ -28,6 +28,8 @@ handlers:
   login: admin
 - url: /edit/.*
   script: wsgi.py
+- url: /download/.*
+  script: wsgi.py
 
 - url: /static/
   static_dir: static
