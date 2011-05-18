@@ -205,7 +205,7 @@ def download(certifier):
     abort(404)
 
   response = Response(
-    headers={'content-disposition': 'attachment; filename=catalog.csv'},
+    headers={'content-disposition': 'attachment; filename=%s.csv' % certifier.key().name()},
     content_type='text/csv; charset=sjis',
   )
   writer = csv.writer(response.stream, quoting=csv.QUOTE_NONNUMERIC)
