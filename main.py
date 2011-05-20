@@ -196,7 +196,7 @@ def edit(certifier):
 
 @app.route('/download/<certifier>.csv')
 @auth.login_required(check_auth)
-def download(certifier):
+def download_csv(certifier):
   certifier = certifier.lower()
   if request.authorization.username != certifier:
     abort(401)
@@ -224,3 +224,26 @@ def download(certifier):
     ))
 
   return response
+
+@app.route('/download/amazon.xml')
+@auth.login_required(check_auth)
+def download_xml():
+  certifier = 'amazon'
+  if request.authorization.username != certifier:
+    abort(401)
+  certifier = Certifier.get_by_key_name(certifier)
+  if not certifier:
+    abort(404)
+
+  pages = list(certifier.pages)
+  pages.sort(key=operator.attrgetter('owner_name'))
+  pages.sort(key=operator.attrgetter('wish_pieces'), reverse=True)
+  pages.sort(key=operator.attrgetter('wish_amount'), reverse=True)
+
+  text = render_template('wishlist.xml', pages=pages)
+  text = text.replace(u'\u200b', '').encode('cp932')
+  return Response(
+    text,
+    headers={'content-disposition': 'attachment; filename=%s.xml' % certifier.key().name()},
+    content_type='text/xml; charset=sjis',
+  )

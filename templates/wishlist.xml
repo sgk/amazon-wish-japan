@@ -1,0 +1,59 @@
+<scci-layout id="table">
+  <rcm-table cellpadding="0" cellspacing="1">
+    <rcm-tr>
+      <rcm-td style="background-color:#666666;">
+	<rcm-table cellpadding="8" cellspacing="1">
+	  <rcm-tr>
+	    <rcm-td style="background-color:#ffffff; text-align:center;">
+	      <rcm-body>
+		<b>リスト名</b>
+	      </rcm-body>
+	    </rcm-td>
+	    <rcm-td colspan="3" style="background-color:#ffffff; text-align:center;">
+	      <rcm-body>
+		<b>未購入</b>
+	      </rcm-body>
+	    </rcm-td>
+	    <rcm-td colspan="3" style="background-color:#ffffff; text-align:center;">
+	      <rcm-body>
+		<b>購入済み</b>
+	      </rcm-body>
+	    </rcm-td>
+	  </rcm-tr>
+
+	  {% for page in pages %}
+	    <rcm-tr>
+	      <rcm-td style="background-color:#ffffff;">
+		<rcm-body>
+		  <link2>
+		    <url type="local" value="registry/wishlist/{{ page.key().name() }}"/>
+		    <link2-body>{{ page.owner_name }}</link2-body>
+		  </link2>
+		</rcm-body>
+	      </rcm-td>
+	      <rcm-td style="background-color:#ffffff; text-align:right;">
+		<rcm-body>{{ page.wish_items|default(0, true)|comma }} 商品</rcm-body>
+	      </rcm-td>
+	      <rcm-td style="background-color:#ffffff; text-align:right;">
+		<rcm-body>{{ page.wish_pieces|default(0, true)|comma }} 個</rcm-body>
+	      </rcm-td>
+	      <rcm-td style="background-color:#ffffff; text-align:right;">
+		<rcm-body>{{ page.wish_amount|default(0, true)|comma }} 円</rcm-body>
+	      </rcm-td>
+	      <rcm-td style="background-color:#ffffff; text-align:right;">
+		<rcm-body>{{ page.got_items|default(0, true)|comma }} 商品</rcm-body>
+	      </rcm-td>
+	      <rcm-td style="background-color:#ffffff; text-align:right;">
+		<rcm-body>{{ page.got_pieces|default(0, true)|comma }} 個</rcm-body>
+	      </rcm-td>
+	      <rcm-td style="background-color:#ffffff; text-align:right;">
+		<rcm-body>{{ page.got_amount|default(0, true)|comma }} 円</rcm-body>
+	      </rcm-td>
+	    </rcm-tr>
+	  {% endfor %}
+
+	</rcm-table>
+      </rcm-td>
+    </rcm-tr>
+  </rcm-table>
+</scci-layout>
