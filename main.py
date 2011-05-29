@@ -14,6 +14,7 @@ import csv
 
 import amazon
 import auth
+import tzconv
 from models import *
 
 app = Flask('app')
@@ -214,7 +215,7 @@ def download_csv(certifier):
   for page in certifier.pages:
     writer.writerow((
       page.key().name(),
-      page.owner_name.replace(u'\u200b', '').encode('cp932'),
+      page.owner_name.encode('cp932'),
       page.wish_items,
       page.wish_pieces,
       page.wish_amount,
@@ -241,9 +242,15 @@ def download_xml():
   pages.sort(key=operator.attrgetter('wish_amount'), reverse=True)
 
   text = render_template('wishlist.xml', pages=pages)
-  text = text.replace(u'\u200b', '').encode('cp932')
+  text = text.encode('cp932')
+
+  fname = certifier.key().name()
+  fname += '_'
+  fname += tzconv.jst_from_utc(datetime.datetime.now()).strftime('%Y%m%d%H%M')
+  fname += '.xml'
+
   return Response(
     text,
-    headers={'content-disposition': 'attachment; filename=%s.xml' % certifier.key().name()},
+    headers={'content-disposition': 'attachment; filename=%s' % fname},
     content_type='text/xml; charset=sjis',
   )
