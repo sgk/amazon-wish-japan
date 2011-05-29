@@ -9,12 +9,12 @@
 		<b>リスト名</b>
 	      </rcm-body>
 	    </rcm-td>
-	    <rcm-td colspan="3" style="background-color:#ffffff; text-align:center;">
+	    <rcm-td colspan="2" style="background-color:#ffffff; text-align:center;">
 	      <rcm-body>
 		<b>未購入</b>
 	      </rcm-body>
 	    </rcm-td>
-	    <rcm-td colspan="3" style="background-color:#ffffff; text-align:center;">
+	    <rcm-td colspan="2" style="background-color:#ffffff; text-align:center;">
 	      <rcm-body>
 		<b>購入済み</b>
 	      </rcm-body>
@@ -38,16 +38,10 @@
 		<rcm-body>{{ page.wish_pieces|default(0, true)|comma }} 個</rcm-body>
 	      </rcm-td>
 	      <rcm-td style="background-color:#ffffff; text-align:right;">
-		<rcm-body>{{ page.wish_amount|default(0, true)|comma }} 円</rcm-body>
-	      </rcm-td>
-	      <rcm-td style="background-color:#ffffff; text-align:right;">
 		<rcm-body>{{ page.got_items|default(0, true)|comma }} 商品</rcm-body>
 	      </rcm-td>
 	      <rcm-td style="background-color:#ffffff; text-align:right;">
 		<rcm-body>{{ page.got_pieces|default(0, true)|comma }} 個</rcm-body>
-	      </rcm-td>
-	      <rcm-td style="background-color:#ffffff; text-align:right;">
-		<rcm-body>{{ page.got_amount|default(0, true)|comma }} 円</rcm-body>
 	      </rcm-td>
 	    </rcm-tr>
 	  {% endfor %}
