@@ -53,6 +53,9 @@ def get_wishlist_page(id):
   firstpage = get_page_text(WISH_LIST_URL % (id, 1))
   m = RE_OWNER.search(firstpage)
   owner = decode_entity(m.group(1))
+  owner = owner.replace(u'\u200b', '')
+  owner = owner.replace(u'【被災地】', '')
+  owner = owner.replace(u'【避難所】', '')
 
   m = RE_ALL_ITEMS_COUNT.search(firstpage)
   all_items = int(m.group(1)) if m else 0
@@ -66,6 +69,7 @@ def get_wishlist_page(id):
     while True:
       for m in RE_ITEM.finditer(text):
 	name = decode_entity(m.group('name'))
+	name = name.replace(u'\u200b', '')
 	mm = RE_PRICE.search(m.group('price'))
 	price = int(mm.group(1)) if mm else 0
 	all_ = int(m.group('all'))
