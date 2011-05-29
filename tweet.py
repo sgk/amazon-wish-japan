@@ -94,9 +94,13 @@ def tweet_new_item():
 
   count = 0
   for item in Item.all().filter('tweeted =', None):
-    if item.pieces == 0 or not item.page:
-      item.tweeted = datetime.datetime.now()
-      item.put()
+    try:
+      if item.pieces == 0 or not item.page:
+	item.tweeted = datetime.datetime.now()
+	item.put()
+	continue
+    except db.ReferencePropertyResolveError:
+      item.delete()
       continue
 
     preamble = u'被災地必要物資：'
@@ -120,7 +124,7 @@ def tweet_new_item():
 
     try:
       api.update_status(text)
-    except TweepError:
+    except tweepy.TweepError:
       pass
     item.tweeted = datetime.datetime.now()
     item.put()
