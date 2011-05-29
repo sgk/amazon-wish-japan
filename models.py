@@ -18,7 +18,11 @@ class WishListPage(db.Model):
 
   @property
   def certifiers(self):
-    return (o.certifier for o in self.pagecertifier_set)
+    for o in self.pagecertifier_set:
+      try:
+	yield o.certifier
+      except db.ReferencePropertyResolveError:
+	o.delete()
 
 class Certifier(db.Model):
   # key: lower case name		# 'amazon'
@@ -30,7 +34,11 @@ class Certifier(db.Model):
 
   @property
   def pages(self):
-    return (o.page for o in self.pagecertifier_set)
+    for o in self.pagecertifier_set:
+      try:
+	yield o.page
+      except db.ReferencePropertyResolveError:
+	o.delete()
 
   def __eq__(self, arg):
     return self.key() == arg.key()
