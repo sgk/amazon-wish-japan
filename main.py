@@ -20,7 +20,7 @@ from models import *
 app = Flask('app')
 app.debug = True
 
-CRAWL_INTERVAL = 5 * 60
+CRAWL_INTERVAL = 10 * 60
 
 # cronから起動する。
 @app.route('/update_list')
@@ -97,7 +97,7 @@ def page_cache(func):
   @functools.wraps(func)
   def decorated(*args, **kw):
     data = memcache.get(request.path)
-    if not data or not isinstance(data, str):
+    if not data or not isinstance(data, unicode):
       data = func(*args, **kw)
       memcache.set(request.path, data)
     return data
