@@ -1,10 +1,10 @@
 cron:
 - description: update the list of wishlist pages
   url: /update_list
-  schedule: every 7 minutes
+  schedule: every 14 minutes
 - description: update from the wishlist page contents
   url: /update_pages
-  schedule: every 5 minutes
+  schedule: every 10 minutes
 - description: tweet newly found items
   url: /tweet_new_item
-  schedule: every 1 minutes
+  schedule: every 10 minutes
