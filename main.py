@@ -90,7 +90,7 @@ def update_pages():
     page.got_amount = ga
     page.put()
     count += 1
-  memcache.flush_all()
+    memcache.flush_all()
   return str(count)
 
 def page_cache(func):
@@ -125,19 +125,8 @@ def top():
   return render_template('top.html',
     pages=pages,
     wi=wi, wp=wp, wa=wa, gi=gi, gp=gp, ga=ga,
+    now=tzconv.jst_from_utc(datetime.datetime.now()),
   )
-
-@app.template_filter('comma')
-def comma_filter(value):
-  r = ''
-  while value >= 1000:
-    value, tail = divmod(value, 1000)
-    r = ',%03d%s' % (tail, r)
-  return '%d%s' % (value, r)
-
-@app.template_filter('minutes_ago')
-def minutes_ago_filter(value):
-  return ((datetime.datetime.now() - value).seconds + 30) / 60
 
 @app.route('/add_certifier', methods=['GET', 'POST'])
 def add_certifier():
@@ -254,3 +243,19 @@ def download_xml():
     headers={'content-disposition': 'attachment; filename=%s' % fname},
     content_type='text/xml; charset=sjis',
   )
+
+@app.template_filter('comma')
+def comma_filter(value):
+  r = ''
+  while value >= 1000:
+    value, tail = divmod(value, 1000)
+    r = ',%03d%s' % (tail, r)
+  return '%d%s' % (value, r)
+
+@app.template_filter('minutes_ago')
+def minutes_ago_filter(value):
+  return ((datetime.datetime.now() - value).seconds + 30) / 60
+
+@app.template_filter('strftime')
+def strftime(value, fmt):
+  return value.strftime(fmt)
