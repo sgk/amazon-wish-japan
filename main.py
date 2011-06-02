@@ -230,12 +230,14 @@ def download_xml():
   pages.sort(key=operator.attrgetter('wish_pieces'), reverse=True)
   pages.sort(key=operator.attrgetter('wish_amount'), reverse=True)
 
-  text = render_template('wishlist.xml', pages=pages)
+  now = tzconv.jst_from_utc(datetime.datetime.now())
+
+  text = render_template('wishlist.xml', pages=pages, now=now)
   text = text.encode('cp932')
 
   fname = certifier.key().name()
   fname += '_'
-  fname += tzconv.jst_from_utc(datetime.datetime.now()).strftime('%Y%m%d%H%M')
+  fname += now.strftime('%Y%m%d%H%M')
   fname += '.xml'
 
   return Response(

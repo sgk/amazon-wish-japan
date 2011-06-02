@@ -1,6 +1,13 @@
 <scci-layout id="table">
   <rcm-table cellpadding="0" cellspacing="1">
     <rcm-tr>
+      <rcm-td>
+	<rcm-div align="right">
+	  <rcm-body>{{ now|strftime('%Y&#x5e74;%m&#x6708;%d&#x65e5 %H&#x6642;%M&#x5206;%S&#x79d2;')|safe }}現在</rcm-body>
+	</rcm-div>
+      </rcm-td>
+    </rcm-tr>
+    <rcm-tr>
       <rcm-td style="background-color:#666666;">
 	<rcm-table cellpadding="8" cellspacing="1">
 	  <rcm-tr>
